@@ -1,0 +1,63 @@
+{
+	"name": "@vdegenne/cmc",
+	"version": "0.1.0",
+	"description": "",
+	"type": "module",
+	"main": "",
+	"module": "",
+	"exports": {
+		".": {
+			"import": "./lib/index.js",
+			"types": "./types.d.ts"
+		},
+		"./data/*": {
+			"import": "./data/*"
+		}
+	},
+	"types": "",
+	"scripts": {
+		"build": "wireit"
+	},
+	"files": [
+		"./lib/",
+		"!./lib/scripts/",
+		"./data/",
+		"./types.d.ts"
+	],
+	"devDependencies": {
+		"@types/node": "^24.5.2",
+		"typescript": "^5.9.2",
+		"wireit": "^0.14.12"
+	},
+	"wireit": {
+		"build": {
+			"dependencies": [
+				"build:ts",
+				"script:fetch-all"
+			]
+		},
+		"build:ts": {
+			"command": "tsc --pretty",
+			"clean": "if-file-deleted",
+			"files": [
+				"./tsconfig.json",
+				"./src/"
+			],
+			"output": [
+				"./lib/"
+			]
+		},
+		"script:fetch-all": {
+			"command": "node ./lib/scripts/fetch-all.js",
+			"files": [
+				"./lib/scripts/fetch-all.js"
+			],
+			"dependencies": [
+				"build:ts"
+			],
+			"output": [
+				"./data/**/*.json"
+			]
+		}
+	}
+}
