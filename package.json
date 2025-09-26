@@ -1,6 +1,6 @@
 {
 	"name": "@vdegenne/cmc",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"description": "",
 	"type": "module",
 	"main": "",
@@ -49,11 +49,11 @@
 		},
 		"script:fetch-all": {
 			"command": "node ./lib/scripts/fetch-all.js",
-			"files": [
-				"./lib/scripts/fetch-all.js"
-			],
 			"dependencies": [
 				"build:ts"
+			],
+			"files": [
+				"./lib/scripts/fetch-all.js"
 			],
 			"output": [
 				"./data/**/*.json"
