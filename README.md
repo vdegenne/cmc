@@ -19,11 +19,16 @@ Create static data from CoinMarketCap :
 ## How to use data
 
 ```ts
-// cmc.ts
-
+/* cmc.ts */
 import _currencies from '@vdegenne/cmc/data/mini.json?inline' with {type: 'json'}
+export * from '@vdegenne/cmc'
 
 export const currencies = _currencies as unknown as CMC.MiniCurrency[]
+
+export function getCMCCurrencyFromSymbol(symbol: string) {
+	symbol = symbol.toLocaleUpperCase()
+	return currencies.find((c) => symbol === c.symbol)
+}
 ```
 
 Do not forget to add `@vdegenne/cmc` to the list of `types` in your `tsconfig.json`.
