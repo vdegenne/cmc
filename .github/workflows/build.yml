@@ -1,4 +1,4 @@
-name: Build
+name: Build & Publish
 
 on:
   push:
@@ -7,24 +7,38 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
+      # Checkout repo
       - uses: actions/checkout@v3
+
+      # Setup Node.js
       - uses: actions/setup-node@v3
         with:
           node-version: 23
           cache: npm
 
-      - uses: google/wireit@setup-github-actions-caching/v1
+      # Setup Wireit caching
+      - uses: google/wireit@setup-github-actions-caching/v2
 
+      # Install dependencies
       - run: npm ci
+
+      # Build project using Wireit
       - run: npm run build
         env:
           WIREIT_FAILURES: continue
 
-      - uses: s0/git-publish-subdir-action@develop
+      # Bump patch version and publish to npm
+      - name: Bump patch version and publish
+        run: |
+          # bump patch version without creating a git tag
+          npm version patch --no-git-tag-version
+
+          # setup npm auth
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+          # publish package
+          npm publish --access public
         env:
-          REPO: self
-          BRANCH: build # The branch name where you want to push the assets
-          FOLDER: dist # The directory where your assets are generated
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub will automatically add this - you don't need to bother getting a token
-          MESSAGE: 'Build: ({sha}) {msg}' # The commit message
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
