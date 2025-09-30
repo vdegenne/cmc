@@ -20,14 +20,18 @@ Create static data from CoinMarketCap :
 
 ```ts
 /* cmc.ts */
-import _currencies from '@vdegenne/cmc/data/mini.json?inline' with {type: 'json'}
+import _currencies from '@vdegenne/cmc/data/mini.json' with {type: 'json'}
 export * from '@vdegenne/cmc'
 
-export const currencies = _currencies as unknown as CMC.MiniCurrency[]
+export const currencies = _currencies as CMC.MiniCurrency[]
 
-export function getCMCCurrencyFromSymbol(symbol: string) {
+export function getCMCCurrencyFromSymbol(symbol: string, fromLast = false) {
+	const currencies = [..._currencies] as CMC.MiniCurrency[]
+	if (fromLast) {
+		currencies.reverse()
+	}
 	symbol = symbol.toLocaleUpperCase()
-	return currencies.find((c) => symbol === c.symbol)
+	return currencies.find((c) => c.symbol === symbol)
 }
 ```
 
