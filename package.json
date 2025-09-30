@@ -52,9 +52,7 @@
 			"dependencies": [
 				"build:ts"
 			],
-			"files": [
-				"./lib/scripts/fetch-all.js"
-			],
+			"files": [],
 			"output": [
 				"./data/**/*.json"
 			]
