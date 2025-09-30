@@ -3,8 +3,6 @@
 	"version": "0.1.9",
 	"description": "",
 	"type": "module",
-	"main": "",
-	"module": "",
 	"exports": {
 		".": {
 			"import": "./lib/index.js",
@@ -14,7 +12,6 @@
 			"import": "./data/*"
 		}
 	},
-	"types": "",
 	"scripts": {
 		"build": "wireit"
 	},
