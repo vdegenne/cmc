@@ -32,7 +32,7 @@ jobs:
       # Bump patch version and publish to npm
       - name: Bump patch version and publish
         run: |
-          # bump patch version without creating a git tag
+          # bump patch version without git tag
           npm version patch --no-git-tag-version
 
           # setup npm auth
@@ -42,3 +42,12 @@ jobs:
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Commit updated package.json back to main
+      - name: Commit package.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json
+          git commit -m "Bump patch version [ci skip]" || echo "No changes to commit"
+          git push origin main
