@@ -11,6 +11,10 @@
 		"./data/*": {
 			"import": "./data/*"
 		},
+		"./utils.js": {
+			"import": "./lib/utils.js",
+			"types": "./lib/utils.d.ts"
+		},
 		"./CMCManager.js": {
 			"import": "./lib/CMCManager.js",
 			"types": "./lib/CMCManager.d.ts"
