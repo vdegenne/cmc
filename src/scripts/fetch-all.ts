@@ -37,9 +37,9 @@ async function main() {
 		}
 
 		let allCurrencies = await fetchAllCurrencies()
-		allCurrencies = allCurrencies.filter(
-			(c) => c.symbol.toLocaleLowerCase() !== 'eden',
-		)
+		// allCurrencies = allCurrencies.filter(
+		// 	(c) => c.symbol.toLocaleLowerCase() !== 'eden',
+		// )
 
 		// Save full data
 		fs.writeFileSync(ALL_FILE, JSON.stringify(allCurrencies), 'utf-8')
