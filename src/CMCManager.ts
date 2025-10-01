@@ -1,3 +1,7 @@
+type UrlBuilderFunction = (
+	getLastVersion: () => Promise<string>,
+) => Promise<string>
+
 interface ManagerOptions {
 	/**
 	 * Data to use to hydrate the object when instanciated.
@@ -17,9 +21,28 @@ interface ManagerOptions {
 	/**
 	 * Where to load the data from when using `loadRemote()`
 	 *
-	 * @default 'https://cdn.jsdelivr.net/npm/@vdegenne/cmc@latest/data/mini.json'
+	 * By default it creates the url using the follow UrlBuilderFunction
+	 * ```ts
+	 * async function (getLastVersion) {
+	 *   return `https://cdn.jsdelivr.net/npm/@vdegenne/cmc@${await getLastVersion()}/mini.json`;
+	 * }
+	 * ```
+	 *
+	 * You can also use your own function:
+	 * ```ts
+	 * new CMCManager({
+	 *   async remoteUrl(getLastVersion) { return `https://unpkg.com/@vdegenne/cmc@${await getLastVersion()}/data/all.json` }
+	 * })
+	 * ```
+	 *
+	 * Or just a simple string:
+	 * ```ts
+	 * new CMCManager({
+	 *   remoteUrl: 'https://unpkg.com/@vdegenne/cmc@0.1.17/mini.json'
+	 * })
+	 * ```
 	 */
-	remoteUrl: string
+	remoteUrl: string | UrlBuilderFunction
 
 	/**
 	 * Trying to encourage cache if possible when using `loadRemote()`
@@ -39,6 +62,12 @@ interface ManagerOptions {
 	debug: boolean
 }
 
+async function getLastVersion() {
+	const res = await fetch('https://registry.npmjs.org/@vdegenne/cmc/latest')
+	const data = await res.json()
+	return data.version as string
+}
+
 export class CMCManager {
 	#options: ManagerOptions
 	#data: (CMC.Currency | CMC.MiniCurrency)[] | undefined = undefined
@@ -54,8 +83,9 @@ export class CMCManager {
 		this.#options = {
 			prefetch: true,
 			initData: undefined,
-			remoteUrl:
-				'https://cdn.jsdelivr.net/npm/@vdegenne/cmc@latest/data/mini.json',
+			async remoteUrl(getLastVersion) {
+				return `https://cdn.jsdelivr.net/npm/@vdegenne/cmc@${await getLastVersion()}/mini.json`
+			},
 			fetchCacheStrategy: undefined,
 			debug: false,
 			...options,
@@ -77,7 +107,20 @@ export class CMCManager {
 	): Promise<void> {
 		this.#ready = (async () => {
 			this.#log('Fetching remote data...')
-			const res = await fetch(this.#options.remoteUrl, {
+			let url: string
+			switch (typeof this.#options.remoteUrl) {
+				case 'string':
+					url = this.#options.remoteUrl
+					break
+				case 'function':
+					url = await this.#options.remoteUrl(getLastVersion)
+					break
+				default:
+					// exhaustive check: if we ever get here, TS will error
+					const _exhaustive: never = this.#options.remoteUrl
+					throw new Error(`Unsupported type: ${_exhaustive}`)
+			}
+			const res = await fetch(url, {
 				...(cacheStrategy !== undefined ? {cache: cacheStrategy} : {}),
 			})
 			if (!res.ok) {

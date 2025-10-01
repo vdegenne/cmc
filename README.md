@@ -61,3 +61,31 @@ cmcManager.getCurrencyFromSymbol('btc').name // Bitcoin
 
 Pros: Data is fetched from CDN which will pull latest data possible. You don't have to build everytime data changes.
 Cons: More complex to integrate in your app, because now it's asynchronous and you have to make sure the data is fetched before feeding your views (use `cmcManager.ready`)
+
+## Where to fetch data from in dynamic mode?
+
+By default it creates the url using the follow `UrlBuilderFunction` function:
+
+```ts
+async function (getLastVersion) {
+	return `https://cdn.jsdelivr.net/npm/@vdegenne/cmc@${await getLastVersion()}/mini.json`;
+}
+```
+
+You can also use your own builder function:
+
+```ts
+new CMCManager({
+	async remoteUrl(getLastVersion) {
+		return `https://unpkg.com/@vdegenne/cmc@${await getLastVersion()}/data/all.json`
+	},
+})
+```
+
+Or just a simple string:
+
+```ts
+new CMCManager({
+	remoteUrl: 'https://unpkg.com/@vdegenne/cmc@0.1.17/data/mini.json',
+})
+```
