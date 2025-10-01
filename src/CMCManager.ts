@@ -20,6 +20,8 @@ interface ManagerOptions {
 	 * @default 'https://cdn.jsdelivr.net/npm/@vdegenne/cmc/data/mini.json'
 	 */
 	remoteUrl: string
+
+	debug: boolean
 }
 
 export class CMCManager {
@@ -27,23 +29,35 @@ export class CMCManager {
 	#data: (CMC.Currency | CMC.MiniCurrency)[] | undefined = undefined
 	#ready: Promise<void> | undefined
 
+	log(...message: any[]) {
+		if (this.#options.debug) {
+			console.log(...message)
+		}
+	}
+
 	constructor(options?: Partial<ManagerOptions>) {
 		this.#options = {
 			prefetch: true,
 			initData: undefined,
 			remoteUrl: 'https://cdn.jsdelivr.net/npm/@vdegenne/cmc/data/mini.json',
+			debug: false,
 			...options,
 		}
 
 		if (this.#options.initData) {
+			this.log('Data initialized')
 			this.#data = this.#options.initData
 		} else if (this.#options.prefetch) {
+			this.log('Prefetching')
 			this.loadRemote()
 		}
+
+		this.log('Constructor end.')
 	}
 
 	async loadRemote(cache = false): Promise<void> {
 		this.#ready = (async () => {
+			this.log('Fetching remote data...')
 			const res = await fetch(this.#options.remoteUrl, {
 				cache: cache ? 'force-cache' : 'no-cache',
 			})
@@ -52,6 +66,7 @@ export class CMCManager {
 					`Failed to fetch crypto data: ${res.status} ${res.statusText}`,
 				)
 			}
+			this.log('Fetch success.')
 			this.#data = await res.json()
 		})()
 		return this.#ready
@@ -75,9 +90,11 @@ export class CMCManager {
 	): CMC.MiniCurrency | undefined {
 		this.ensureData()
 		const currencies = fromLast ? [...this.#data!].reverse() : this.#data!
-		return currencies.find(
+		const currency = currencies.find(
 			(c) => c.symbol.toUpperCase() === symbol.toUpperCase(),
 		)
+		this.log('getCurrencyFromSymbol found: ', currency)
+		return currency
 	}
 
 	getAll(): ReadonlyArray<CMC.MiniCurrency> {
