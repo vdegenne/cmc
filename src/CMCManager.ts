@@ -17,7 +17,7 @@ interface ManagerOptions {
 	/**
 	 * Where to load the data from when using `loadRemote()`
 	 *
-	 * @default 'https://cdn.jsdelivr.net/npm/@vdegenne/cmc/data/mini.json'
+	 * @default 'https://cdn.jsdelivr.net/npm/@vdegenne/cmc@latest/data/mini.json'
 	 */
 	remoteUrl: string
 
@@ -54,7 +54,8 @@ export class CMCManager {
 		this.#options = {
 			prefetch: true,
 			initData: undefined,
-			remoteUrl: 'https://cdn.jsdelivr.net/npm/@vdegenne/cmc/data/mini.json',
+			remoteUrl:
+				'https://cdn.jsdelivr.net/npm/@vdegenne/cmc@latest/data/mini.json',
 			fetchCacheStrategy: undefined,
 			debug: false,
 			...options,
