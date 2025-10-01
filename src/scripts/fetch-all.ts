@@ -6,9 +6,9 @@ const LIMIT = 10000
 const ALL_FILE = path.join(DATA_DIR, 'all.json')
 const MINI_FILE = path.join(DATA_DIR, 'mini.json')
 
-async function fetchAllCurrencies(): Promise<any[]> {
+async function fetchAllCurrencies(): Promise<CMC.Currency[]> {
 	let start = 1
-	const allCurrencies: any[] = []
+	const allCurrencies = []
 
 	while (true) {
 		const url = `https://api.coinmarketcap.com/data-api/v3/map/all?listing_status=active,untracked&exchangeAux=is_active,status&cryptoAux=is_active,status&start=${start}&limit=${LIMIT}`
@@ -36,7 +36,10 @@ async function main() {
 			fs.mkdirSync(DATA_DIR, {recursive: true})
 		}
 
-		const allCurrencies = await fetchAllCurrencies()
+		let allCurrencies = await fetchAllCurrencies()
+		allCurrencies = allCurrencies.filter(
+			(c) => c.symbol.toLocaleLowerCase() !== 'eden',
+		)
 
 		// Save full data
 		fs.writeFileSync(ALL_FILE, JSON.stringify(allCurrencies), 'utf-8')

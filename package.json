@@ -10,6 +10,10 @@
 		},
 		"./data/*": {
 			"import": "./data/*"
+		},
+		"./CMCManager.js": {
+			"import": "./lib/CMCManager.js",
+			"types": "./lib/CMCManager.d.ts"
 		}
 	},
 	"scripts": {
@@ -49,7 +53,6 @@
 			"dependencies": [
 				"build:ts"
 			],
-			"files": [],
 			"output": [
 				"./data/**/*.json"
 			]
