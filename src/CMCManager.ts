@@ -24,7 +24,7 @@ interface ManagerOptions {
 	 * By default it creates the url using the follow UrlBuilderFunction
 	 * ```ts
 	 * async function (getLastVersion) {
-	 *   return `https://cdn.jsdelivr.net/npm/@vdegenne/cmc@${await getLastVersion()}/mini.json`;
+	 *   return `https://cdn.jsdelivr.net/npm/@vdegenne/cmc@${await getLastVersion()}/data/mini.json`;
 	 * }
 	 * ```
 	 *
@@ -84,7 +84,7 @@ export class CMCManager {
 			prefetch: true,
 			initData: undefined,
 			async remoteUrl(getLastVersion) {
-				return `https://cdn.jsdelivr.net/npm/@vdegenne/cmc@${await getLastVersion()}/mini.json`
+				return `https://cdn.jsdelivr.net/npm/@vdegenne/cmc@${await getLastVersion()}/data/mini.json`
 			},
 			fetchCacheStrategy: undefined,
 			debug: false,

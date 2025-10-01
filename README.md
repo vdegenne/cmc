@@ -68,7 +68,7 @@ By default it creates the url using the follow `UrlBuilderFunction` function:
 
 ```ts
 async function (getLastVersion) {
-	return `https://cdn.jsdelivr.net/npm/@vdegenne/cmc@${await getLastVersion()}/mini.json`;
+	return `https://cdn.jsdelivr.net/npm/@vdegenne/cmc@${await getLastVersion()}/data/mini.json`;
 }
 ```
 
