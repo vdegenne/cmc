@@ -1,6 +1,6 @@
 {
 	"name": "@vdegenne/cmc",
-	"version": "0.1.20",
+	"version": "0.1.21",
 	"description": "cmc",
 	"type": "module",
 	"exports": {
