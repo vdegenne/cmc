@@ -21,6 +21,21 @@ interface ManagerOptions {
 	 */
 	remoteUrl: string
 
+	/**
+	 * Trying to encourage cache if possible when using `loadRemote()`
+	 * That doesn't prevent the endpoint to provide updated data when it changes.
+	 *
+	 * @default undefined
+	 */
+	fetchCacheStrategy:
+		| 'default'
+		| 'no-cache'
+		| 'force-cache'
+		| 'no-store'
+		| 'only-if-cached'
+		| 'reload'
+		| undefined
+
 	debug: boolean
 }
 
@@ -40,6 +55,7 @@ export class CMCManager {
 			prefetch: true,
 			initData: undefined,
 			remoteUrl: 'https://cdn.jsdelivr.net/npm/@vdegenne/cmc/data/mini.json',
+			fetchCacheStrategy: undefined,
 			debug: false,
 			...options,
 		}
@@ -55,11 +71,13 @@ export class CMCManager {
 		this.log('Constructor end.')
 	}
 
-	async loadRemote(cache = false): Promise<void> {
+	async loadRemote(
+		cacheStrategy = this.#options.fetchCacheStrategy,
+	): Promise<void> {
 		this.#ready = (async () => {
 			this.log('Fetching remote data...')
 			const res = await fetch(this.#options.remoteUrl, {
-				cache: cache ? 'force-cache' : 'no-cache',
+				...(cacheStrategy !== undefined ? {cache: cacheStrategy} : {}),
 			})
 			if (!res.ok) {
 				throw new Error(
