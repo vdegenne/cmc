@@ -30,8 +30,8 @@
 		"./types.d.ts"
 	],
 	"devDependencies": {
-		"@types/node": "^24.5.2",
-		"typescript": "^5.9.2",
+		"@types/node": "^24.7.2",
+		"typescript": "^5.9.3",
 		"wireit": "^0.14.12"
 	},
 	"wireit": {
