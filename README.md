@@ -95,7 +95,7 @@ new CMCManager({
 ```js
 import {cmcIconUrl} from '@vdegenne/cmc/utils.js'
 
-const coin = cmc.getCurrencyFromSymbol('btc')
+const coin = cmcManager.getCurrencyFromSymbol('btc')
 const url = cmcIconUrl(coin.id)
 // ...
 ```
