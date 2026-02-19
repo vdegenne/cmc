@@ -89,3 +89,13 @@ new CMCManager({
 	remoteUrl: 'https://unpkg.com/@vdegenne/cmc@0.1.17/data/mini.json',
 })
 ```
+
+## Using icons
+
+```js
+import {cmcIconUrl} from '@vdegenne/cmc/utils.js'
+
+const coin = cmc.getCurrencyFromSymbol('btc')
+const url = cmcIconUrl(coin.id)
+// ...
+```
