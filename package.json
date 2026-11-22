@@ -3,6 +3,10 @@
 	"version": "0.1.30",
 	"description": "cmc",
 	"type": "module",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/vdegenne/cmc"
+	},
 	"exports": {
 		".": {
 			"import": "./lib/utils.js",
