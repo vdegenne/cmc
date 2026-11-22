@@ -25,7 +25,8 @@
 		}
 	},
 	"scripts": {
-		"build": "wireit"
+		"build": "wireit",
+		"script:fetch-all": "wireit"
 	},
 	"files": [
 		"./lib/",
@@ -41,8 +42,7 @@
 	"wireit": {
 		"build": {
 			"dependencies": [
-				"build:ts",
-				"script:fetch-all"
+				"build:ts"
 			]
 		},
 		"build:ts": {
