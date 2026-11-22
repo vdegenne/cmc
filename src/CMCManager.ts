@@ -4,7 +4,7 @@ type UrlBuilderFunction = (
 
 interface ManagerOptions {
 	/**
-	 * Data to use to hydrate the object when instanciated.
+	 * Data to use to hydrate the object when instantiated.
 	 * Providing this will automatically turn prefetch to false.
 	 *
 	 * @default undefined
@@ -12,41 +12,19 @@ interface ManagerOptions {
 	initData: CMC.MiniCurrency[] | undefined
 
 	/**
-	 * whether to fetch data remotely automatically when object is created, or not.
+	 * Whether to fetch data remotely automatically when object is created.
 	 *
 	 * @default true
 	 */
 	prefetch: boolean
 
 	/**
-	 * Where to load the data from when using `loadRemote()`
-	 *
-	 * By default it creates the url using the follow UrlBuilderFunction
-	 * ```ts
-	 * async function (getLastVersion) {
-	 *   return `https://cdn.jsdelivr.net/npm/@vdegenne/cmc@${await getLastVersion()}/data/mini.json`;
-	 * }
-	 * ```
-	 *
-	 * You can also use your own function:
-	 * ```ts
-	 * new CMCManager({
-	 *   async remoteUrl(getLastVersion) { return `https://unpkg.com/@vdegenne/cmc@${await getLastVersion()}/data/all.json` }
-	 * })
-	 * ```
-	 *
-	 * Or just a simple string:
-	 * ```ts
-	 * new CMCManager({
-	 *   remoteUrl: 'https://unpkg.com/@vdegenne/cmc@0.1.17/mini.json'
-	 * })
-	 * ```
+	 * Where to load the data from when using loadRemote().
 	 */
 	remoteUrl: string | UrlBuilderFunction
 
 	/**
-	 * Trying to encourage cache if possible when using `loadRemote()`
-	 * That doesn't prevent the endpoint to provide updated data when it changes.
+	 * Trying to encourage cache if possible when using loadRemote().
 	 *
 	 * @default undefined
 	 */
@@ -62,30 +40,37 @@ interface ManagerOptions {
 	debug: boolean
 }
 
-async function getLastVersion() {
+async function getLastVersion(): Promise<string> {
 	const res = await fetch('https://registry.npmjs.org/@vdegenne/cmc/latest')
+
+	if (!res.ok) {
+		throw new Error(
+			`Failed to fetch latest version: ${res.status} ${res.statusText}`,
+		)
+	}
+
 	const data = await res.json()
 	return data.version as string
 }
 
 export class CMCManager {
 	#options: ManagerOptions
-	#data: (CMC.Currency | CMC.MiniCurrency)[] | undefined = undefined
+	#data: (CMC.Currency | CMC.MiniCurrency)[] | undefined
 	#ready: Promise<void> | undefined
 
-	#log(...message: any[]) {
-		if (this.#options.debug) {
-			console.log(...message)
-		}
+	/**
+	 * @deprecated
+	 */
+	#log(...message: any[]): void {
+		if (this.#options.debug) console.log(...message)
 	}
 
 	constructor(options?: Partial<ManagerOptions>) {
 		this.#options = {
 			prefetch: true,
 			initData: undefined,
-			async remoteUrl(getLastVersion) {
-				return `https://cdn.jsdelivr.net/npm/@vdegenne/cmc@${await getLastVersion()}/data/mini.json`
-			},
+			remoteUrl: async (getLastVersion) =>
+				`https://cdn.jsdelivr.net/npm/@vdegenne/cmc@${await getLastVersion()}/data/mini.json`,
 			fetchCacheStrategy: undefined,
 			debug: false,
 			...options,
@@ -107,30 +92,27 @@ export class CMCManager {
 	): Promise<void> {
 		this.#ready = (async () => {
 			this.#log('Fetching remote data...')
-			let url: string
-			switch (typeof this.#options.remoteUrl) {
-				case 'string':
-					url = this.#options.remoteUrl
-					break
-				case 'function':
-					url = await this.#options.remoteUrl(getLastVersion)
-					break
-				default:
-					// exhaustive check: if we ever get here, TS will error
-					const _exhaustive: never = this.#options.remoteUrl
-					throw new Error(`Unsupported type: ${_exhaustive}`)
-			}
+
+			const remoteUrl = this.#options.remoteUrl
+			const url =
+				typeof remoteUrl === 'string'
+					? remoteUrl
+					: await remoteUrl(getLastVersion)
+
 			const res = await fetch(url, {
-				...(cacheStrategy !== undefined ? {cache: cacheStrategy} : {}),
+				...(cacheStrategy !== undefined && {cache: cacheStrategy}),
 			})
+
 			if (!res.ok) {
 				throw new Error(
 					`Failed to fetch crypto data: ${res.status} ${res.statusText}`,
 				)
 			}
+
 			this.#log('Fetch success.')
 			this.#data = await res.json()
 		})()
+
 		return this.#ready
 	}
 
@@ -151,11 +133,15 @@ export class CMCManager {
 		fromLast = false,
 	): CMC.MiniCurrency | undefined {
 		this.ensureData()
-		const currencies = fromLast ? [...this.#data!].reverse() : this.#data!
-		const currency = currencies.find(
-			(c) => c.symbol.toUpperCase() === symbol.toUpperCase(),
-		)
-		this.#log('getCurrencyFromSymbol found: ', currency)
+
+		const normalizedSymbol = symbol.toUpperCase()
+		const data = this.#data!
+
+		const currency = fromLast
+			? data.findLast((c) => c.symbol.toUpperCase() === normalizedSymbol)
+			: data.find((c) => c.symbol.toUpperCase() === normalizedSymbol)
+
+		// this.#log('getCurrencyFromSymbol found: ', currency)
 		return currency
 	}
 
