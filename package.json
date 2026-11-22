@@ -9,17 +9,17 @@
 	},
 	"exports": {
 		".": {
-			"import": "./lib/utils.js",
+			"import": "./lib/index.js",
 			"types": "./types.d.ts"
 		},
 		"./data/*": {
 			"import": "./data/*"
 		},
-		"./utils.js": {
+		"./utils": {
 			"import": "./lib/utils.js",
 			"types": "./lib/utils.d.ts"
 		},
-		"./CMCManager.js": {
+		"./manager": {
 			"import": "./lib/CMCManager.js",
 			"types": "./lib/CMCManager.d.ts"
 		}
