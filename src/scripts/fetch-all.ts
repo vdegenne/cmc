@@ -56,6 +56,7 @@ async function main() {
 		console.log(`Saved mini data to ${MINI_FILE}`)
 	} catch (err) {
 		console.error('Error fetching currencies:', err)
+		process.exitCode = 1
 	}
 }
 
